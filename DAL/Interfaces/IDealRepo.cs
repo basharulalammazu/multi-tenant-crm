@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DAL.Interfaces
 {
-    public interface DealRepo : IRepository<Deal> 
+    public interface IDealRepo : IRepository<Deal> 
     {
         public Deal? FindWithContact(Guid id, out string msg);
         public Deal? FindWithOwner(Guid id, out string msg);
