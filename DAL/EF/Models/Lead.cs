@@ -44,5 +44,6 @@ namespace DAL.EF.Models
         public virtual Tenant Tenant { get; set; } = null!;
         public virtual AppUser? AssignedToUser { get; set; }
         public virtual Contact? Contact { get; set; }
+        public object AssignedTo { get; internal set; }
     }
 }
