@@ -21,6 +21,7 @@ namespace DAL.EF.Models
 
         public DateTime? DeletedAt { get; set; }
 
+        [Column(TypeName = "VARCHAR(150)")]
         public string CreatedBy { get; set; } = string.Empty;
     }
 }

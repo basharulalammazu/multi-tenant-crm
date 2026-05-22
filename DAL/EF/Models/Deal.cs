@@ -1,6 +1,7 @@
 using DAL.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.EF.Models
@@ -11,6 +12,10 @@ namespace DAL.EF.Models
         public Guid ContactId { get; set; }
         [ForeignKey("Owner")]
         public Guid OwnerId { get; set; }
+
+        [Required]
+        [StringLength(150)]
+        [Column(TypeName = "VARCHAR(150)")]
         public string Title { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
@@ -18,6 +23,9 @@ namespace DAL.EF.Models
         public DealStage Stage { get; set; } = DealStage.Prospect;
         public DateTime? ExpectedCloseAt { get; set; }
         public DateTime? ClosedAt { get; set; }
+
+        [StringLength(1000)]
+        [Column(TypeName = "VARCHAR(1000)")]
         public string? Notes { get; set; }
 
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DAL.EF.Models
@@ -9,7 +10,15 @@ namespace DAL.EF.Models
     public class Tenant
     {
         public Guid Id { get; set; }
+
+        [Required]
+        [StringLength(150)]
+        [Column(TypeName = "VARCHAR(150)")]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100)]
+        [Column(TypeName = "VARCHAR(100)")]
         public string Subdomain { get; set; } = string.Empty;
         public PlanType Plan { get; set; } = PlanType.Free;
         public bool IsActive { get; set; } = true;

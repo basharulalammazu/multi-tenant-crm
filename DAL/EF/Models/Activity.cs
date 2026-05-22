@@ -1,6 +1,7 @@
 ﻿using DAL.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -15,7 +16,14 @@ namespace DAL.EF.Models
         [ForeignKey("Deal")]
         public Guid? DealId { get; set; }
         public ActivityType Type { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        [Column(TypeName = "VARCHAR(200)")]
         public string Subject { get; set; } = string.Empty;
+
+        [StringLength(1000)]
+        [Column(TypeName = "VARCHAR(1000)")]
         public string? Notes { get; set; }
         public DateTime OccurredAt { get; set; }
         public int? DurationMin { get; set; }
