@@ -32,7 +32,8 @@ namespace DAL.Repos
                 deal.Stage = newStage;
                 deal.UpdatedAt = DateTime.UtcNow;
 
-                if (newStage is DealStage.Won or DealStage.Lost)
+                // If the deal is marked as Won or Lost, set the ClosedAt timestamp
+                if (newStage is DealStage.Won or DealStage.Lost) // Both are same: newStage == DealStage.Won || newStage == DealStage.Lost)
                     deal.ClosedAt = DateTime.UtcNow;
 
                 msg = $"Deal stage changed to '{newStage}' successfully.";
