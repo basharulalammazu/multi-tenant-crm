@@ -1,13 +1,28 @@
 using DAL.EF;
+using DAL;
+using BLL.Services;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<CrmSaaSDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConn")));
+
+// Register Data Access Factory
+builder.Services.AddScoped<DataAccessFactory>();
+
+// Register AuthService
+builder.Services.AddScoped<AuthService>();
+
+// Register AutoMapper
+// builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
@@ -31,5 +46,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapRazorPages();
 
 app.Run();

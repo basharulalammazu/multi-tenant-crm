@@ -73,8 +73,15 @@ namespace DAL.Repos
         {
             try
             {
+                var entity = table.Find(id);
+                if (entity == null)
+                {
+                    msg = "Entity not found.";
+                    return null;
+                }
+
                 msg = string.Empty;
-                return GetById(id, out msg);
+                return entity;
             }
             catch (Exception ex)
             {

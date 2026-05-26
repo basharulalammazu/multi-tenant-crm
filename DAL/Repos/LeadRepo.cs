@@ -64,7 +64,7 @@ namespace DAL.Repos
             try
             {
                 msg = string.Empty;
-                return db.Leads.Include(l => l.AssignedTo).ToList();
+                return db.Leads.Include(l => l.AssignedToUserId).ToList();
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ namespace DAL.Repos
             try
             {
                 msg = string.Empty;
-                return db.Leads.Include(l => l.AssignedTo)
+                return db.Leads.Include(l => l.AssignedToUserId)
                                 .Where(l => l.AssignedToUserId == userId)
                                 .OrderByDescending(l => l.CreatedAt)
                                 .ToList();
@@ -111,7 +111,7 @@ namespace DAL.Repos
             try
             {
                 msg = string.Empty;
-                return db.Leads.Include(l => l.AssignedTo)
+                return db.Leads.Include(l => l.AssignedToUserId)
                                 .Where(l => l.Status == status)
                                 .OrderByDescending(l => l.CreatedAt)
                                 .ToList();
@@ -146,7 +146,7 @@ namespace DAL.Repos
             {
                 msg = string.Empty;
                 var threshold = DateTime.UtcNow.AddDays(-daysWithoutActivity);
-                return db.Leads.Include(l => l.AssignedTo)
+                return db.Leads.Include(l => l.AssignedToUserId)
                                 .Where(l => l.Status == LeadStatus.Contacted
                                          && l.UpdatedAt != null
                                          && l.UpdatedAt < threshold)

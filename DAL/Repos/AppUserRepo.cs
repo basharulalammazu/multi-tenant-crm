@@ -65,6 +65,7 @@ namespace DAL.Repos
             {
                 msg = string.Empty;
                 return db.AppUsers.Include(x => x.Tenant).FirstOrDefault(x => x.Email == email);
+                // return db.AppUsers.FirstOrDefault(x => x.Email == email);
             }
             catch(Exception ex)
             {
@@ -110,6 +111,11 @@ namespace DAL.Repos
                 return db.AppUsers.Where(u => u.TenantId == tenantId && u.IsActive)
                                     .OrderBy(u => u.LastName)
                                     .ThenBy(u => u.FirstName).ToList();
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return null;
             }
         }
 

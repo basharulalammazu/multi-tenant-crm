@@ -36,7 +36,7 @@ namespace DAL.Repos
             {
                 msg = string.Empty;
                 return db.Notifications
-            .Include(n => n.User)
+            .Include(n => n.Recipient)
             .OrderByDescending(n => n.CreatedAt)
             .ToList();
             }
@@ -52,10 +52,9 @@ namespace DAL.Repos
             try
             {
                 msg = string.Empty;
-                return db.Notifications
-                    .Where(n => n.RecipientId == userId)
-                    .OrderByDescending(n => n.CreatedAt)
-                    .ToList();
+                return db.Notifications.Where(n => n.RecipientId == userId)
+                                        .OrderByDescending(n => n.CreatedAt)
+                                        .ToList();
             }
             catch (Exception ex)
             {
@@ -69,6 +68,10 @@ namespace DAL.Repos
             try
             {
                 msg = string.Empty;
+
+                return db.Notifications.Where(n => n.RecipientId== userId && !n.IsRead)
+           .OrderByDescending(n => n.CreatedAt)
+           .ToList();
             }
             catch (Exception ex)
             {
