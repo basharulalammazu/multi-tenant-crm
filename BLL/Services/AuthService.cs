@@ -2,6 +2,7 @@
 using BLL.Constants;
 using BLL.DTOs;
 using BLL.DTOs.Auth;
+using BLL.DTOs.Shared;
 using DAL;
 using DAL.EF.Models;
 using DAL.Enums;
@@ -148,9 +149,7 @@ namespace BLL.Services
                 .UpdateRefreshToken(userId, null, null, out _);
         }
 
-        // ─────────────────────────────────────────────────────────
         // Get Current User
-        // ─────────────────────────────────────────────────────────
 
         public UserDTO? GetCurrentUser(Guid userId)
         {

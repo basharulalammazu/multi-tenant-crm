@@ -2,6 +2,7 @@
 using AutoMapper.Features;
 using BLL.DTOs;
 using BLL.DTOs.Auth;
+using BLL.DTOs.Shared;
 using DAL.EF.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
