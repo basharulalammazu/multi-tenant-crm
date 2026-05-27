@@ -82,78 +82,54 @@ namespace BLL.Services
         }
 
         // Register Tenant
-        /*
         public TokenResponseDTO RegisterTenant(RegisterTenantDTO model, out string msg)
         {
             msg = string.Empty;
 
-            ValidateRegisterInput(model.CompanyName, model.Subdomain, model.AdminEmail, model.AdminPassword);
+            ValidateRegisterInput(model.Name, model.Subdomain, model.Email, model.PasswordHash);
 
-            bool subdomainExists = dataAccessFactory.TenantRepoAccess().FindBySubdomain(model.Subdomain, out _) != null;
+            var subdomainExists = dataAccessFactory.TenantRepoAccess().FindBySubdomain(model.Subdomain, out msg);
 
-            if (subdomainExists)
+            if (subdomainExists != null)
                 throw new InvalidOperationException($"Subdomain '{model.Subdomain}' is already taken");
 
-            bool emailExists = dataAccessFactory.AppUserRepoAccess().FindByEmail(model.AdminEmail, out _) != null;
+            bool emailExists = dataAccessFactory.AppUserRepoAccess().FindByEmail(model.Email, out msg) != null;
 
             if (emailExists)
-                throw new InvalidOperationException($"Email '{model.AdminEmail}' is already registered");
+                throw new InvalidOperationException($"Email '{model.Email}' is already registered");
 
             var mapper = MapperConfig.GetMapper();
-             mapper.Map<Tenant>(RegisterTenantDTO);
+            var tenantData = mapper.Map<Tenant>(model);
 
-            var tenant = new Tenant
-            {
-                Id = Guid.NewGuid(),
-                Name = companyName,
-                Subdomain = subdomain,
-                Plan = PlanType.Free,
-                IsActive = true,
-                TrialEndsAt = DateTime.UtcNow.AddDays(AppConstants.DefaultTrialDays),
-                CreatedAt = DateTime.UtcNow
-            };
-            
-            bool tenantCreated = dataAccessFactory.TenantRepoAccess().Add(tenant, out msg);
 
+            var tenantCreated = dataAccessFactory.GetRepo<Tenant>().Add(tenantData, out msg);
+
+
+
+            // Admin creation
             if (!tenantCreated)
                 throw new InvalidOperationException(msg);
 
-            mapper.Map<AppUser>
+            model.TenantId = tenantData.Id;
+            var adminData = mapper.Map<AppUser>(model);
 
-            var admin = new AppUser
-            {
-                Id = Guid.NewGuid(),
-                TenantId = tenant.Id,
-                Email = adminEmail,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
-                FirstName = firstName ?? string.Empty,
-                LastName = lastName ?? string.Empty,
-                Role = UserRole.TenantAdmin,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
+            // Hash the password before saving
+            adminData.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
 
-            bool adminCreated = dataAccessFactory
-                .AppUserRepoAccess()
-                .Add(admin, out msg);
+            bool adminCreated = dataAccessFactory.GetRepo<AppUser>().Add(adminData, out msg);
 
             if (!adminCreated)
                 throw new InvalidOperationException(msg);
 
-            var tokenResponse = GenerateTokenPair(admin);
+            var tokenResponse = GenerateTokenPair(adminData);
 
-            dataAccessFactory
-                .AppUserRepoAccess()
-                .UpdateRefreshToken(
-                    admin.Id,
-                    tokenResponse.RefreshToken,
-                    DateTime.UtcNow.AddDays(AppConstants.RefreshTokenExpiryDays),
-                    out _
-                );
+            bool response = dataAccessFactory.AppUserRepoAccess().UpdateRefreshToken(adminData.Id, tokenResponse.RefreshToken,DateTime.UtcNow.AddDays(AppConstants.RefreshTokenExpiryDays),out msg);
             
+            if (!response)
+                throw new InvalidOperationException(msg);
+
             return tokenResponse;
         }
-        */
 
         // ─────────────────────────────────────────────────────────
         // Logout
@@ -215,57 +191,31 @@ namespace BLL.Services
                 );
         }
 
-        private void ValidateRegisterInput(
-            string companyName,
-            string subdomain,
-            string adminEmail,
-            string adminPassword)
+        private void ValidateRegisterInput(string companyName, string subdomain, string adminEmail, string adminPassword)
         {
             if (string.IsNullOrWhiteSpace(companyName))
-                throw new ArgumentException(
-                    "Company name is required",
-                    nameof(companyName)
-                );
+                throw new ArgumentException("Company name is required", nameof(companyName));
 
             if (string.IsNullOrWhiteSpace(subdomain))
-                throw new ArgumentException(
-                    "Subdomain is required",
-                    nameof(subdomain)
-                );
+                throw new ArgumentException("Subdomain is required", nameof(subdomain));
 
             if (string.IsNullOrWhiteSpace(adminEmail))
-                throw new ArgumentException(
-                    "Admin email is required",
-                    nameof(adminEmail)
-                );
+                throw new ArgumentException("Admin email is required", nameof(adminEmail));
 
             if (string.IsNullOrWhiteSpace(adminPassword))
-                throw new ArgumentException(
-                    "Admin password is required",
-                    nameof(adminPassword)
-                );
+                throw new ArgumentException("Admin password is required", nameof(adminPassword));
         }
 
         private TokenResponseDTO GenerateTokenPair(AppUser user)
         {
-            var expiry =
-                DateTime.UtcNow.AddMinutes(
-                    AppConstants.AccessTokenExpiryMinutes
-                );
+            var expiry =DateTime.UtcNow.AddMinutes(AppConstants.AccessTokenExpiryMinutes);
 
-            string jwtKey = configuration["Jwt:Key"]
-                ?? throw new InvalidOperationException(
-                    "JWT Key is missing from configuration"
-                );
+            string jwtKey = configuration["Jwt:Key"]?? 
+                                    throw new InvalidOperationException("JWT Key is missing from configuration");
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey)
-            );
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
-            var credentials = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256
-            );
+            var credentials = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
@@ -301,20 +251,18 @@ namespace BLL.Services
             };
 
             var token = new JwtSecurityToken(
-                issuer: configuration["Jwt:Issuer"],
-                audience: configuration["Jwt:Audience"],
-                claims: claims,
-                expires: expiry,
-                signingCredentials: credentials
-            );
+                            issuer: configuration["Jwt:Issuer"],
+                            audience: configuration["Jwt:Audience"],
+                            claims: claims,
+                            expires: expiry,
+                            signingCredentials: credentials
+                        );
 
             string accessToken =
                 new JwtSecurityTokenHandler().WriteToken(token);
 
             string refreshToken =
-                Convert.ToBase64String(
-                    RandomNumberGenerator.GetBytes(64)
-                );
+                Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
             return new TokenResponseDTO
             {

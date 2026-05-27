@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Features;
 using BLL.DTOs;
+using BLL.DTOs.Auth;
 using DAL.EF.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,6 +14,8 @@ public class MapperConfig
         cfg =>
         {
             cfg.CreateMap<AppUser, UserDTO>().ReverseMap();
+            cfg.CreateMap<Tenant, RegisterTenantDTO>().ReverseMap();
+            cfg.CreateMap<AppUser, RegisterTenantDTO>().ReverseMap();
         },
         NullLoggerFactory.Instance
     );

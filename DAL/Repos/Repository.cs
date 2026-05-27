@@ -24,12 +24,12 @@ namespace DAL.Repos
             {
                 msg = string.Empty;
 
-                table.Add(entity);
+                 table.Add(entity);
                 return db.SaveChanges() > 0;
             }
             catch (Exception ex) 
             {
-                msg = ex.Message;
+                msg = $"{ex.Message}. Inner Exception: {ex.InnerException?.Message}";
                 return false;
             }
 

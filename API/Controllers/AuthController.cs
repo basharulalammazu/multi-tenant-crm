@@ -77,7 +77,6 @@ namespace CRM_SaaS_API.Controllers
         }
 
         // Register Tenant
-        /*
         [HttpPost("register-tenant")]
         [AllowAnonymous]
         public IActionResult RegisterTenant(RegisterTenantDTO model)
@@ -120,7 +119,7 @@ namespace CRM_SaaS_API.Controllers
                 });
             }
         }
-        */
+        
 
         // ─────────────────────────────────────────────────────────
         // Logout
