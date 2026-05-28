@@ -20,6 +20,7 @@ builder.Services.AddScoped<DataAccessFactory>();
 
 // Register AuthService
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 // Register AutoMapper
 // builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

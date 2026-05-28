@@ -17,6 +17,8 @@ public class MapperConfig
             cfg.CreateMap<AppUser, UserDTO>().ReverseMap();
             cfg.CreateMap<Tenant, RegisterTenantDTO>().ReverseMap();
             cfg.CreateMap<AppUser, RegisterTenantDTO>().ReverseMap();
+            cfg.CreateMap<AppUser, LoginDTO>().ReverseMap();
+            cfg.CreateMap<AppUser, CreateUserDTO>().ReverseMap();
         },
         NullLoggerFactory.Instance
     );

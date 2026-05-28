@@ -7,8 +7,9 @@ namespace DAL.Enums
     public enum UserRole
     {
         SuperAdmin = 1,
-        TenantAdmin = 2,
-        SalesManager = 3,
-        SalesRep = 4
+        Admin = 2,
+        TenantAdmin = 3,
+        SalesManager = 4,
+        SalesRep = 5
     }
 }
